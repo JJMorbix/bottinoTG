@@ -10,4 +10,8 @@ register_handlers(bot)
 
 if __name__ == "__main__":
     print("Bot in esecuzione...")
-    bot.infinity_polling()
+    try:
+        bot.polling(none_stop=True, skip_pending=True)
+    except KeyboardInterrupt:
+        print("Bot fermato con successo.")
+        bot.stop_polling()
