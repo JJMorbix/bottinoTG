@@ -1,7 +1,7 @@
 {
     "stop": [
-      "admin_only",
-      "no_login"
+      "no_login",
+      "admin_only"
     ],
     "start": [
       "no_login"

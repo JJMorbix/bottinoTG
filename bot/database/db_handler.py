@@ -30,4 +30,4 @@ class MongoDBHandler:
         """Close the MongoDB connection."""
         if self.client:
             self.client.close()
-            print("MongoDB connection closed.")
+            #print("MongoDB connection closed.")

@@ -10,3 +10,9 @@ def get_mongo_handler():
     if not mongo_handler.client:
         mongo_handler.connect()  # Ensure connection is established when it's first used
     return mongo_handler
+
+def close_mongo_connection():
+    if mongo_handler.client:
+        mongo_handler.close_connection()
+        return True
+    return False

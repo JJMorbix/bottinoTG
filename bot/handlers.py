@@ -1,6 +1,8 @@
 from bot.commands import command_handlers
 import json
 from bot.commands.conditions import common_conditions  # Import your condition functions
+from telegram import Update
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 
 def load_command_conditions(file_path):
     """
@@ -27,12 +29,14 @@ def load_command_conditions(file_path):
     
     return command_conditions
 
-def register_handlers(bot):
+def register_handlers(application):
     command_conditions = load_command_conditions("bot/commands/conditions.json")
-
-    for command, handler in command_handlers.items():
-        @bot.message_handler(commands=[command])
-        def wrapper(message, bot=bot, handler=handler, command=command):
+    
+    def command_wrapper(handler, command):
+        async def wrapper(update: Update, context: CallbackContext):
+            message = update.message
+            user_id = message.from_user.id
+            
             # Retrieve conditions for this command (if any)
             conditions = list(command_conditions.get(command, []))
             if common_conditions.no_login in conditions:
@@ -40,23 +44,24 @@ def register_handlers(bot):
             else:
                 from bot import get_user_cache
                 cache = get_user_cache()
-                if not cache.check_user(message.from_user.id):  # L'utente non è registrato
-                    bot.send_message(message.chat.id, "Non sei attualmente registrato. Premi /registra per maggiori info")  # Send the specific error message
+                if not cache.check_user(user_id):
+                    await context.bot.send_message(chat_id=message.chat.id, text="Non sei attualmente registrato. Premi /registra per maggiori info")
                     return
-
+            
             # Check if all conditions are satisfied
             for condition in conditions:
-                # Dynamically call the condition function from the common_conditions module
-                is_valid, error_message = condition(message.from_user.id)
-                
+                is_valid, error_message = condition(user_id)
                 if not is_valid:
-                    bot.send_message(message.chat.id, error_message)  # Send the specific error message
-                    return  # Stop processing this command if the condition fails
-
-            handler(message, bot)
-            #log_message(message)  # Log each message
-
-    @bot.message_handler(func=lambda message: not message.text.startswith("/"))
-    def handle_non_command_messages(message):
-        bot.send_message(message.chat.id, "Parla come mangi")
-        #log_message(message)
+                    await context.bot.send_message(chat_id=message.chat.id, text=error_message)
+                    return
+            
+            await handler(update, context)
+        return wrapper
+    
+    for command, handler in command_handlers.items():
+        application.add_handler(CommandHandler(command, command_wrapper(handler, command)))
+    
+    async def handle_non_command_messages(update: Update, context: CallbackContext):
+        await context.bot.send_message(chat_id=update.message.chat.id, text="Parla come mangi")
+    
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_non_command_messages))
