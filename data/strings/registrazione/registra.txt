@@ -1,0 +1,5 @@
+Per poter iniziare a giocare è necessario <b>registrarsi</b>.
+Questo significa che <b>vincolerai</b> i tuoi progressi al tuo attuale Username (@{{USERNAME}}).
+Se dovessi cambiarlo, <b>non</b> potrai più accedere con il tuo attuale profilo.
+
+Per confermare, /conferma

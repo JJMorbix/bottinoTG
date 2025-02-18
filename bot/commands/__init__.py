@@ -1,6 +1,14 @@
 import os
 import importlib
 
+reader = None
+def get_string_reader():
+    global reader
+    if reader is None:
+        from bot.strings import StringReader
+        reader = StringReader()
+    return reader
+
 # Dizionario
 command_handlers = {}
 

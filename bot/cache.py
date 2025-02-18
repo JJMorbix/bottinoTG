@@ -40,9 +40,18 @@ class UserCache:
         # Check if the user was found
         if result:
             # Add the user to the cache if they are registered
-            print("Ho memorizzato {user_id} tra gli utenti registrati")
+            print(f"Ho memorizzato {user_id} tra gli utenti registrati")
             self._registered_users.append(user_id)
             return True
         
         print("User not found.")
         return False
+
+    def add_user(self, user_id: int, username: str):
+        """Add a user to the cache and the database."""
+        # Add the user to the cache
+        self._registered_users.append(user_id)
+        
+        # Add the user to the database
+        db_handler = get_mongo_handler()
+        db_handler.insert_document("Utenti", {"_id": user_id, "username": username})

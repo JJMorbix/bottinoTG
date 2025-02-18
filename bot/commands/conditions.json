@@ -5,6 +5,14 @@
     ],
     "start": [
       "no_login"
+    ],
+    "registra": [
+      "no_login",
+      "unregistered_only"
+    ],
+    "conferma": [
+      "no_login",
+      "unregistered_only"
     ]
   }
   
