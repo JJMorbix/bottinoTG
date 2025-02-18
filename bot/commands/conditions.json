@@ -1,0 +1,10 @@
+{
+    "stop": [
+      "admin_only",
+      "no_login"
+    ],
+    "start": [
+      "no_login"
+    ]
+  }
+  
